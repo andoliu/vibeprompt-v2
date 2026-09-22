@@ -1,0 +1,49 @@
+---
+import { ViewTransitions } from 'astro:transitions';
+import Analytics from '@vercel/analytics/astro';
+import SearchOverlay from '../components/SearchOverlay.astro';
+import Header from '../components/Header.astro';
+import '../styles/globals.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'Copy-ready AI coding prompts for Claude Code, Cursor, Lovable and Jev. Find a prompt, copy it, ship it.' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <ViewTransitions />
+    <Analytics />
+    <script is:inline>
+      const theme = localStorage.getItem('theme') || 'light';
+      document.documentElement.classList.add(theme);
+    </script>
+  </head>
+  <body class="min-h-screen bg-background text-foreground transition-colors duration-300">
+    <Header />
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <slot />
+    </main>
+    <footer class="border-t border-border/40 mt-16">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-sm text-muted-foreground flex flex-col sm:flex-row items-center justify-between gap-3">
+        <p>© 2026 VibePrompt — Copy-ready prompts for AI coding tools.</p>
+        <nav class="flex gap-5">
+          <a href="/about/" class="hover:text-foreground">About</a>
+          <a href="/privacy/" class="hover:text-foreground">Privacy</a>
+          <a href="/contact/" class="hover:text-foreground">Contact</a>
+        </nav>
+      </div>
+    </footer>
+    <SearchOverlay />
+  </body>
+</html>

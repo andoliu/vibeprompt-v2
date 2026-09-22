@@ -1,0 +1,26 @@
+---
+import CopyButton from './CopyButton';
+import { toolInfo } from '../lib/tools';
+
+interface Props {
+  tool: string;
+  title: string;
+  prompt: string;
+  note?: string;
+}
+const { tool, title, prompt, note } = Astro.props;
+const t = toolInfo(tool);
+---
+
+<article data-tool={tool} class="rounded-xl border border-border/70 bg-card shadow-sm hover:shadow-md hover:border-primary/30 transition-all p-5 flex flex-col">
+  <div class="flex items-center justify-between gap-2 mb-2.5">
+    <span class={`inline-flex items-center text-xs font-medium rounded-full px-2.5 py-0.5 ${t.badge}`}>{t.label}</span>
+    <span class="text-[11px] text-muted-foreground/70 font-mono">{prompt.split(/\s+/).length} words</span>
+  </div>
+  <h3 class="font-semibold leading-snug mb-1">{title}</h3>
+  {note && <p class="text-sm text-muted-foreground mb-3">{note}</p>}
+  <pre class="text-xs leading-relaxed whitespace-pre-wrap bg-muted/50 border border-border/50 rounded-lg p-3.5 overflow-y-auto max-h-56 mb-3"><code>{prompt}</code></pre>
+  <div class="mt-auto flex justify-end">
+    <CopyButton client:load text={prompt} />
+  </div>
+</article>

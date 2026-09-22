@@ -1,0 +1,6 @@
+{
+  "redirects": [
+    { "source": "/prompt/:id", "destination": "/", "permanent": true },
+    { "source": "/category/:slug", "destination": "/", "permanent": true }
+  ]
+}

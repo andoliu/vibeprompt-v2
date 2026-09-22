@@ -1,0 +1,33 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PromptList from '../../components/PromptList.astro';
+import prompts from '../../data/prompts.json';
+
+const count = prompts.filter((p) => p.tool === 'claude-code' && p.scene === 'debugging').length;
+---
+
+<Layout
+  title={`${count} Best Claude Code Prompts for Debugging (Copy & Paste, 2026) | VibePrompt`}
+  description="Copy-ready Claude Code debugging prompts: systematic root-cause analysis, minimal reproduction builders, log triage, regression hunting with git bisect, and async race condition isolation. Stop guessing, start isolating."
+>
+  <nav class="text-sm text-muted-foreground mb-4">
+    <a href="/" class="hover:text-foreground">Home</a> /
+    <a href="/claude-code-prompts/" class="hover:text-foreground">Claude Code Prompts</a> /
+    Debugging
+  </nav>
+  <h1 class="text-3xl sm:text-4xl font-bold mb-4">Claude Code Prompts for Debugging</h1>
+  <p class="text-muted-foreground leading-relaxed mb-8 max-w-3xl">
+    The failure mode of AI-assisted debugging is obvious: you paste an error, the model confidently patches a symptom, and the bug moves somewhere else.
+    These prompts prevent that. Each one forces Claude Code through a phase structure — reproduce, hypothesize, experiment, <em>then</em> fix — so the fix lands on the
+    actual cause. The "Explain-Then-Fix Contract" is worth setting once at the start of every debugging session; the rest are situational.
+  </p>
+  <PromptList filter={(p) => p.tool === 'claude-code' && p.scene === 'debugging'} />
+
+  <div class="mt-10 rounded-xl border border-border bg-card p-6">
+    <h2 class="font-semibold mb-2">Related</h2>
+    <ul class="text-sm text-muted-foreground space-y-1.5">
+      <li><a href="/claude-code/saas-mvp-prompts/" class="text-primary hover:underline">Claude Code prompts for SaaS MVPs</a> — once the bug is fixed, ship the feature.</li>
+      <li><a href="/claude-code-prompts/" class="text-primary hover:underline">All Claude Code prompts</a></li>
+    </ul>
+  </div>
+</Layout>

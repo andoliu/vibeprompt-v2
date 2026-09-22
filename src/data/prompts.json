@@ -1,0 +1,254 @@
+[
+  {
+    "id": "cc-debug-001",
+    "tool": "claude-code",
+    "scene": "debugging",
+    "title": "Systematic Root-Cause Debugging",
+    "prompt": "Act as my senior debugging partner. I will paste an error message and the relevant code. Do NOT suggest a fix yet. Instead: (1) restate the failure precisely in one sentence; (2) list the top 3 hypotheses for the root cause, ranked by likelihood, each with a one-line reason; (3) for each hypothesis, propose the cheapest possible experiment that would confirm or kill it. Wait for my experiment results before we move to fixing.",
+    "note": "Stop Claude from jumping to patches before the real cause is confirmed.",
+    "date": "2026-09-22"
+  },
+  {
+    "id": "cc-debug-002",
+    "tool": "claude-code",
+    "scene": "debugging",
+    "title": "Minimal Reproduction Builder",
+    "prompt": "Below is a bug report and the suspected module. Produce a minimal standalone reproduction: the smallest possible file(s) and steps that trigger the bug with no external dependencies. If you cannot reproduce it logically, tell me exactly what information is missing before writing any code.",
+    "note": "Shrink flaky bugs to a reproducible test case before fixing.",
+    "date": "2026-09-22"
+  },
+  {
+    "id": "cc-debug-003",
+    "tool": "claude-code",
+    "scene": "debugging",
+    "title": "Log Triage Pass",
+    "prompt": "Here are application logs from a failed session. Do a structured triage: (1) timeline of significant events; (2) the first anomaly in the timeline and why it is anomalous; (3) which of ERROR/WARN lines are symptoms vs. causes; (4) the single most likely root cause and what log line I should add next to prove it. Keep each section under 5 bullets.",
+    "note": "Turn a wall of logs into a causal story.",
+    "date": "2026-09-22"
+  },
+  {
+    "id": "cc-debug-004",
+    "tool": "claude-code",
+    "scene": "debugging",
+    "title": "Regression Hunter",
+    "prompt": "This feature worked before and is broken now. Walk a git-bisect-style investigation with me: (1) ask me for the last known-good commit and the first known-bad commit (or help me find them); (2) list the commits in that range grouped by subsystem; (3) identify the 3 most suspicious commits and why; (4) propose the bisect test we should run at each step. Do not modify code until we have isolated the commit.",
+    "note": "For 'it used to work' bugs — isolate the breaking change first.",
+    "date": "2026-09-22"
+  },
+  {
+    "id": "cc-debug-005",
+    "tool": "claude-code",
+    "scene": "debugging",
+    "title": "Explain-Then-Fix Contract",
+    "prompt": "For every bug I give you, follow this contract: PHASE 1 — explain the bug mechanism in plain language, including why the code was ever written this way (what assumption broke). PHASE 2 — propose at least two fixes: a minimal safe patch and a proper structural fix, with trade-offs. PHASE 3 — only after I choose, implement it, and add one regression test that fails on the old code. Never skip Phase 1 even if the fix seems obvious.",
+    "note": "Enforces understanding before patching — set it once per session.",
+    "date": "2026-09-22"
+  },
+  {
+    "id": "cc-debug-006",
+    "tool": "claude-code",
+    "scene": "debugging",
+    "title": "Async / Race Condition Isolation",
+    "prompt": "The bug only appears intermittently. Assume a concurrency cause until proven otherwise. (1) Map every async boundary in the suspect flow (awaits, timers, event handlers, network callbacks) in order; (2) mark each pair of operations whose order is NOT guaranteed; (3) for each unguaranteed pair, describe the exact interleaving that would produce the symptom; (4) suggest the minimal logging or assertion that would catch the interleaving in the act.",
+    "note": "For heisenbugs that vanish under the debugger.",
+    "date": "2026-09-22"
+  },
+  {
+    "id": "cc-mvp-001",
+    "tool": "claude-code",
+    "scene": "saas-mvp",
+    "title": "Ruthless MVP Scope Cutter",
+    "prompt": "I will describe a product idea. Before writing any code, return: (1) the single core user journey in 5 steps or fewer; (2) a feature cut-list — everything NOT needed for launch, each with a one-line reason it can wait; (3) the riskiest assumption the MVP must test; (4) a 2-week build plan where each day ends in something demoable. Challenge my scope aggressively; if a feature does not serve the core journey or the riskiest assumption, cut it.",
+    "note": "Run this before any scaffolding prompt.",
+    "date": "2026-09-22"
+  },
+  {
+    "id": "cc-mvp-002",
+    "tool": "claude-code",
+    "scene": "saas-mvp",
+    "title": "Next.js + Supabase + Stripe Scaffold",
+    "prompt": "Scaffold a minimal SaaS with Next.js (App Router, TypeScript, Tailwind). Requirements: (1) Supabase auth (email magic link); (2) a protected /app page that reads the session server-side; (3) Stripe Checkout with one $9/mo plan, webhook handler that flips users.paid in Supabase; (4) a landing page with hero, 3 benefits, pricing, FAQ. Generate clean file-by-file, no placeholder comments, every file complete and runnable. Explain nothing except choices you had to make.",
+    "note": "The classic paid-SaaS skeleton in one shot.",
+    "date": "2026-09-22"
+  },
+  {
+    "id": "cc-mvp-003",
+    "tool": "claude-code",
+    "scene": "saas-mvp",
+    "title": "Schema Design with RLS in Mind",
+    "prompt": "Design the Supabase/Postgres schema for this app: <describe app>. Deliver: (1) tables with columns, types and FKs; (2) row-level-security policies for 'users see only their own data' on every table, written as actual SQL; (3) indexes for the 3 most likely query patterns; (4) what you deliberately did NOT normalize and why. Flag any table where a wrong RLS policy would leak data across tenants.",
+    "note": "Multi-tenant safety from day one, not as an afterthought.",
+    "date": "2026-09-22"
+  },
+  {
+    "id": "cc-mvp-004",
+    "tool": "claude-code",
+    "scene": "saas-mvp",
+    "title": "Landing Page Copy Generator",
+    "prompt": "Write landing page copy for <product> targeting <audience>. Structure: (1) headline under 10 words stating the outcome, not the technology; (2) subheadline handling the #1 objection; (3) 3 benefit blocks in 'verb the outcome' form, no jargon; (4) 5 FAQ questions that are actually objections in disguise, with answers; (5) one CTA line repeated at top and bottom. Tone: plain English a smart 12-year-old understands. No hype words like revolutionary, game-changing, unleash.",
+    "note": "Copy structure follows how people actually scan landing pages.",
+    "date": "2026-09-22"
+  },
+  {
+    "id": "cc-mvp-005",
+    "tool": "claude-code",
+    "scene": "saas-mvp",
+    "title": "Seed Data With Edge Cases",
+    "prompt": "Generate seed data for this schema: <schema>. Include: 2 normal rows per table; then 1 row each for the edge cases — empty optional fields, unicode names, 10KB text field, dates at min/max bounds, a soft-deleted row, and a row that violates no constraint but 'looks wrong' to a human. Explain in one line per edge row what UI bug it is designed to expose.",
+    "note": "Test data that finds the bugs demo users always find first.",
+    "date": "2026-09-22"
+  },
+  {
+    "id": "cc-mvp-006",
+    "tool": "claude-code",
+    "scene": "saas-mvp",
+    "title": "Launch-Day Hardening Pass",
+    "prompt": "Audit this codebase as if we launch tomorrow. Report only, no fixes yet: (1) every place an unhandled error reaches the user as a crash or blank page; (2) missing input validation on any write path; (3) obvious N+1 or missing-index queries on list endpoints; (4) any secret that could leak client-side; (5) the 3 fixes I should do before launch and the 3 that can wait a week. Rank by 'how bad it looks to a first-time visitor'.",
+    "note": "Pre-launch checklist driven by visitor perception, not perfection.",
+    "date": "2026-09-22"
+  },
+  {
+    "id": "cur-rules-001",
+    "tool": "cursor",
+    "scene": "rules",
+    "title": "Frontend Project .cursorrules",
+    "prompt": "# Project Rules\n\n- Stack: React 18 + TypeScript + Tailwind CSS + Vite\n- All components are function components with explicit prop types; no default exports for components\n- Tailwind first: no inline style attributes, no CSS files unless animating\n- Co-locate tests as Component.test.tsx using Vitest + Testing Library\n- Naming: PascalCase components, camelCase hooks (use* prefix), files match their export\n- Prefer composition over prop-drilling; context only for truly global state\n- Every user-facing string that will be translated goes through the t() helper\n- Accessibility: interactive elements need visible focus states and aria-labels when icon-only\n- Do not add new dependencies without stating what they replace",
+    "note": "Drop into .cursorrules at repo root — Cursor applies it to every request.",
+    "date": "2026-09-22"
+  },
+  {
+    "id": "cur-rules-002",
+    "tool": "cursor",
+    "scene": "rules",
+    "title": "Python Backend .cursorrules",
+    "prompt": "# Project Rules\n\n- Python 3.12, FastAPI, SQLAlchemy 2.0 async, Postgres\n- Type hints everywhere; mypy strict must pass\n- Endpoints: thin routers -> service layer -> repositories; no business logic in routers\n- Pydantic v2 models for all request/response shapes; never return ORM objects directly\n- Migrations via Alembic only; never issue raw DDL\n- Every DB write happens inside a transaction the service layer owns\n- Tests: pytest with async fixtures; a bug fix is not done until it has a failing-first test\n- Docstrings only on public service functions, Google style, under 5 lines",
+    "note": "Keeps Cursor from dumping logic into route handlers.",
+    "date": "2026-09-22"
+  },
+  {
+    "id": "cur-rules-003",
+    "tool": "cursor",
+    "scene": "rules",
+    "title": "Code-Review Enforcer Rules",
+    "prompt": "# Review Rules\n\nWhen I ask for a review, check in this order and stop at the first category with findings:\n1. Correctness: does it do what the surrounding code expects? Any edge case that errors silently?\n2. Security: injection, auth bypass, secrets in code or logs, missing tenant isolation\n3. Failure behavior: what happens when the network/db/dependency is down?\n4. Readability: names that lie, dead code, magic numbers\n5. Only then style, and only if it contradicts project conventions\n\nReport format per finding: file:line, severity (blocker/should-fix/nit), one-sentence problem, one-sentence suggested fix. No praise, no summary of what the code does.",
+    "note": "Turns 'review my code' from vibes into a fixed checklist.",
+    "date": "2026-09-22"
+  },
+  {
+    "id": "cur-rules-004",
+    "tool": "cursor",
+    "scene": "rules",
+    "title": "Small-Commit Contract Rules",
+    "prompt": "# Workflow Rules\n\n- Work in steps small enough that each step compiles and passes tests\n- Before editing more than 3 files for one task, present the plan as a file list and wait\n- After every logical unit, show me the diff summary and run the test suite\n- Commit messages: imperative mood, under 72 chars, body explains WHY not WHAT\n- Never mix refactoring and feature changes in the same commit\n- If a change breaks a test, fixing the test is part of the change, not a follow-up",
+    "note": "Prevents the 40-file mystery PR that can't be reviewed.",
+    "date": "2026-09-22"
+  },
+  {
+    "id": "lov-001",
+    "tool": "lovable",
+    "scene": "landing",
+    "title": "SaaS Landing Page in One Prompt",
+    "prompt": "Build a landing page for <product>, a <one-line description> for <audience>. Sections: sticky nav with logo, 3 links and a CTA button; hero with headline '<your headline>', subheadline and primary CTA; social proof row with 3 short quotes; 3 feature cards each with icon, title, 2-line description; screenshot placeholder section; 3-tier pricing with the middle tier highlighted 'Most popular'; FAQ accordion with 5 items; footer with 4 columns. Style: clean SaaS, generous whitespace, rounded-xl cards, subtle shadows, one accent color <hex>. Mobile-first, responsive at 375px. No lorem ipsum — write real copy.",
+    "note": "The full page structure Lovable builds best.",
+    "date": "2026-09-22"
+  },
+  {
+    "id": "lov-002",
+    "tool": "lovable",
+    "scene": "auth",
+    "title": "Protected Dashboard with Supabase Auth",
+    "prompt": "Create an app with Supabase authentication: (1) a login page with email magic-link; (2) after login, a dashboard page with a sidebar (Dashboard, Settings, Billing) and a top bar showing the user's email and avatar initials; (3) dashboard body: 4 stat cards, one line chart placeholder, and a recent-activity table with 5 rows; (4) unauthenticated visits redirect to login; (5) a Settings page where the user can update their display name in the profiles table. Use Supabase JS v2, store the session with @supabase/ssr, and protect routes in a layout component.",
+    "note": "Auth + shell structure — the base of most Lovable SaaS builds.",
+    "date": "2026-09-22"
+  },
+  {
+    "id": "lov-003",
+    "tool": "lovable",
+    "scene": "growth",
+    "title": "Waitlist Page with Referral Count",
+    "prompt": "Build a waitlist page for <product>: (1) hero with headline, one-line pitch and an email input + 'Join waitlist' button; (2) on submit, store the email in a Supabase 'waitlist' table (email, referral_code, referred_by, created_at) and show success state with the person's position number; (3) each signup gets a referral code; show 'You're #<position> — invite friends to move up' with a copyable invite link (?ref=CODE); (4) if the URL has ?ref=, capture it into the form submission; (5) a simple counter under the form showing total signups. Anti-abuse: validate email format, ignore duplicate submissions.",
+    "note": "Pre-launch page that grows itself via referral positions.",
+    "date": "2026-09-22"
+  },
+  {
+    "id": "lov-004",
+    "tool": "lovable",
+    "scene": "landing",
+    "title": "Pricing Page with Monthly/Yearly Toggle",
+    "prompt": "Build a pricing page for <product> with 3 tiers (<names>). Include: (1) a monthly/yearly toggle where yearly shows '2 months free' and recalculates prices; (2) each tier card: name, one-line audience fit, price, 6-8 feature rows with check icons, CTA button (middle tier highlighted, labeled 'Most popular'); (3) below cards, a feature-comparison table with 8 rows and check/dash cells; (4) an FAQ with 4 pricing objections; (5) a trust line under the CTAs: '14-day refund. No card required for trial.' Style consistent with a clean SaaS look, mobile stacked layout.",
+    "note": "The toggle + comparison table is what Lovable reliably nails.",
+    "date": "2026-09-22"
+  },
+  {
+    "id": "jev-triage-001",
+    "tool": "jev",
+    "scene": "triage",
+    "title": "Support Ticket Triage (One Call, Three Answers)",
+    "prompt": "Task: route and grade every inbound support ticket before a human sees it.\n\nstate = {\n  ticket:  { subject: \"...\", body: \"...\" },\n  account: { plan: \"pro\", age_days: 210 }\n}\n\nquestions:\n- department: Choice(\"Which team should handle this\")\n    billing:   \"Payment, subscription or refund issues\"\n    technical: \"Bugs, integrations or broken features\"\n    success:   \"How-to questions and account help\"\n    other:     \"Anything that fits none of the above\"\n- frustration: Score(\"How frustrated the customer appears\")\n    [\"Calm, just stating facts\", \"Frustrated but civil\", \"Very angry, strong language\"]\n- churn_risk_now: Noul(\"The message signals intent to cancel right now\")\n\nRouting rule (confidence-gated): if department.confidence < 0.5, queue for a human triager.\nIf churn_risk_now.noul > 0.7, escalate regardless of department.",
+    "note": "The pattern from TypeSafe's own docs — all three questions answered in one ~300ms call.",
+    "date": "2026-09-23"
+  },
+  {
+    "id": "jev-moderation-002",
+    "tool": "jev",
+    "scene": "moderation",
+    "title": "Content Gate with Asymmetric Error Costs",
+    "prompt": "state = { content: { title, body }, author: { report_count } }\n\nquestions:\n- violates_policy: Noul(\"Contains harassment, doxxing or illegal solicitation\")\n- borderline:       Noul(\"A careful human reviewer would hesitate on this one\")\n- action: Choice(\"What to do with this content\")\n    approve:     \"Clearly fine — publish\"\n    queue_human: \"Uncertain enough that a human should look\"\n    reject:      \"Clearly violating — remove\"\n\nRule: reject only when violates_policy.noul > 0.8 AND borderline.noul < 0.3.\nA false rejection costs 10x a false approval — when in doubt, queue_human, never reject.",
+    "note": "Encodes your error economics directly into the routing rule.",
+    "date": "2026-09-23"
+  },
+  {
+    "id": "jev-scoring-003",
+    "tool": "jev",
+    "scene": "scoring",
+    "title": "Lead Qualification as Composite Questions",
+    "prompt": "state = { lead: { company_size, signup_source, pages_visited_7d, trial_features_used } }\n\nquestions:\n- icp_fit: Score(\"How well the company matches our ideal customer profile\")\n    [\"Outside ICP\", \"Adjacent market\", \"Core ICP\"]\n- activation: Score(\"How engaged the account was during trial\")\n    [\"Signed up only\", \"Explored lightly\", \"Used the core feature repeatedly\"]\n- handoff: Choice(\"Next action\")\n    sdr_call: \"Worth a human call this week\"\n    nurture:  \"Keep in the email sequence\"\n    other:    \"Not enough signal yet\"\n\nCombine in code, not in the model: handoff = sdr_call is respected only when\nicp_fit.score >= 1.5 AND handoff.confidence > 0.6.",
+    "note": "Official best practice: score each axis independently, weight them in code.",
+    "date": "2026-09-23"
+  },
+  {
+    "id": "jev-extraction-004",
+    "tool": "jev",
+    "scene": "extraction",
+    "title": "Enum-Only Extraction with \"not_stated\"",
+    "prompt": "state = { raw: { category_text, price_text, date_text } }\n\nquestions:\n- category: Choice(\"Best category for this product\")\n    apparel / electronics / home / beauty / other\n- currency: Choice(\"Currency in price_text\")\n    USD / EUR / GBP / not_stated\n- launch_month: Choice(\"Month mentioned in date_text\")\n    jan ... dec / not_stated\n- needs_review: Noul(\"Any field is ambiguous enough to need a human check\")\n\nPer the docs: never ask Jev to parse free-form dates or do arithmetic — enumerate\nthe options (always including \"not_stated\") and let it pick. needs_review > 0.5\nroutes the row to a human.",
+    "note": "Jev is unreliable at counting and date math; enumeration sidesteps both.",
+    "date": "2026-09-23"
+  },
+  {
+    "id": "jev-rerank-005",
+    "tool": "jev",
+    "scene": "rerank",
+    "title": "Search Reranking on a Budget",
+    "prompt": "state = { query: \"the user's original question\", candidate: { title, snippet } }\n\nquestions:\n- relevant: Noul(\"The candidate page actually answers this query\")\n- credible: Noul(\"The source looks authoritative rather than spam\")\n\nRun once per candidate. Keep results with relevant > 0.6 AND credible > 0.5,\ndrop the rest before anything expensive sees them (output tokens are free;\ninput is ~$0.04 per million tokens).",
+    "note": "Filter 20 search hits down to the 3 worth an LLM's attention.",
+    "date": "2026-09-23"
+  },
+  {
+    "id": "jev-agent-safety-006",
+    "tool": "jev",
+    "scene": "agent-safety",
+    "title": "Tool-Call Safety Gate for Coding Agents",
+    "prompt": "state = { plan: \"the agent's stated plan\", tool_call: \"bash: rm -rf ./data\", diff: \"...\" }\n\nquestions:\n- irreversible: Noul(\"This action destroys data or state that cannot be restored\")\n- off_task:     Noul(\"The action is unrelated to the stated plan\")\n- hidden_scope: Noul(\"The command touches files or services outside the workspace\")\n\nRule: block on irreversible OR hidden_scope; ask the user to confirm on off_task.\nQuestions like these answer in ~250ms — cheap enough to run before every\nbash/write call (the \"pi-warden\" pattern).",
+    "note": "A guardrail that's faster and cheaper than a second LLM reviewing the call.",
+    "date": "2026-09-23"
+  },
+  {
+    "id": "jev-routing-007",
+    "tool": "jev",
+    "scene": "routing",
+    "title": "Difficulty-Based Model Router",
+    "prompt": "state = { prompt: \"the incoming user prompt\" }\n\nquestions:\n- difficulty: Score(\"How hard this prompt is for a small model\")\n    [\"Trivial FAQ\", \"Needs real reasoning\", \"Frontier-level\"]\n- needs_tools: Noul(\"Answering requires fresh data: search or API calls\")\n\nRoute in code: difficulty < 1 -> cheap model; 1-2 -> mid model;\n> 2 or needs_tools -> frontier model with tools attached.\nVercel AI Gateway ships this routing pattern natively now.",
+    "note": "Pay frontier prices only for prompts that actually need a frontier model.",
+    "date": "2026-09-23"
+  },
+  {
+    "id": "jev-citation-008",
+    "tool": "jev",
+    "scene": "citation",
+    "title": "Citation Reality Check",
+    "prompt": "state = { claim: \"the sentence being verified\", source: { quote: \"verbatim text from the page\" } }\n\nquestions:\n- relation: Choice(\"Relationship between the quote and the claim\")\n    supports:    \"The quote directly backs the claim\"\n    contradicts: \"The quote states the opposite\"\n    unrelated:   \"The quote is real but about something else\"\n- out_of_context: Noul(\"The quote is technically true but misleading as cited\")\n\nThis catches the failure mode string matching misses: a citation that exists,\nloads fine, and still doesn't say what you claim it says.",
+    "note": "For AI-generated content that must cite real sources.",
+    "date": "2026-09-23"
+  }
+]

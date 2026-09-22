@@ -1,0 +1,213 @@
+---
+// SearchOverlay.astro - ⌘K search overlay (Pagefind)
+---
+
+<div id="search-overlay" class="fixed inset-0 z-[100] hidden">
+  <!-- Backdrop -->
+  <div class="absolute inset-0 bg-background/80 backdrop-blur-sm" id="search-backdrop"></div>
+
+  <!-- Search Container -->
+  <div class="relative flex min-h-full items-start justify-center p-4 pt-[10vh]">
+    <div class="w-full max-w-2xl overflow-hidden rounded-lg border bg-card shadow-lg">
+      <!-- Search Input -->
+      <div class="flex items-center border-b px-4 py-3">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3 h-5 w-5 text-muted-foreground"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input
+          type="text"
+          id="search-input"
+          placeholder="Search prompts..."
+          class="flex-1 bg-transparent outline-none text-base placeholder:text-muted-foreground"
+          autocomplete="off"
+        />
+        <kbd class="hidden sm:inline-flex h-6 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-xs font-medium text-muted-foreground">
+          ESC
+        </kbd>
+      </div>
+
+      <!-- Search Results -->
+      <div id="search-results" class="max-h-[60vh] overflow-y-auto p-2">
+        <div class="p-8 text-center text-muted-foreground">
+          <p>Type to search</p>
+          <p class="text-sm mt-1">Search titles, prompt text and notes</p>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="border-t bg-muted/50 px-4 py-2 text-xs text-muted-foreground flex items-center justify-between">
+        <span><kbd class="rounded border bg-background px-1">↑↓</kbd> navigate</span>
+        <span><kbd class="rounded border bg-background px-1">Enter</kbd> open</span>
+        <span><span id="result-count">0</span> results</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (function() {
+    const overlay = document.getElementById('search-overlay');
+    const backdrop = document.getElementById('search-backdrop');
+    const input = document.getElementById('search-input');
+    const results = document.getElementById('search-results');
+    const resultCount = document.getElementById('result-count');
+    let pagefind = null;
+    let pagefindLoaded = false;
+
+    // Open search
+    function openSearch() {
+      if (overlay) overlay.classList.remove('hidden');
+      if (input) input.focus();
+      if (!pagefindLoaded) {
+        loadPagefind();
+      }
+    }
+
+    // Close search
+    function closeSearch() {
+      if (overlay) overlay.classList.add('hidden');
+      if (input) input.value = '';
+      clearResults();
+    }
+
+    // Clear results
+    function clearResults() {
+      if (results) {
+        results.innerHTML = `
+          <div class="p-8 text-center text-muted-foreground">
+            <p>Type to search</p>
+            <p class="text-sm mt-1">Search titles, prompt text and notes</p>
+          </div>
+        `;
+      }
+      if (resultCount) resultCount.textContent = '0';
+    }
+
+    // Show dev mode message
+    function showDevModeMessage() {
+      if (results) {
+        results.innerHTML = `
+          <div class="p-8 text-center text-muted-foreground">
+            <p>🔍 Search unavailable in dev mode</p>
+            <p class="text-sm mt-2">Run <code class="bg-muted px-1 py-0.5 rounded">npm run build</code> first to generate the search index</p>
+            <p class="text-xs mt-2 text-muted-foreground">Search works in the production build</p>
+          </div>
+        `;
+      }
+    }
+
+    // Load Pagefind dynamically using script tag only
+    async function loadPagefind() {
+      if (pagefindLoaded) return;
+
+      // Check if pagefind script exists
+      try {
+        const response = await fetch('/pagefind/pagefind.js', { method: 'HEAD' });
+        if (!response.ok) {
+          showDevModeMessage();
+          return;
+        }
+      } catch (e) {
+        showDevModeMessage();
+        return;
+      }
+
+      try {
+        // Dynamic script injection for Pagefind
+        const script = document.createElement('script');
+        script.src = '/pagefind/pagefind.js';
+        script.type = 'module';
+        script.onload = function() {
+          // Give it a moment to initialize, then check for pagefind on window
+          setTimeout(function() {
+            if (window.pagefind) {
+              pagefind = window.pagefind;
+              pagefind.init().then(function() {
+                pagefindLoaded = true;
+              });
+            } else {
+              showDevModeMessage();
+            }
+          }, 100);
+        };
+        script.onerror = function() {
+          showDevModeMessage();
+        };
+        document.head.appendChild(script);
+      } catch (e) {
+        console.error('Failed to load Pagefind:', e);
+        showDevModeMessage();
+      }
+    }
+
+    // Perform search
+    async function performSearch(query) {
+      if (!pagefind || !query.trim()) {
+        clearResults();
+        return;
+      }
+
+      try {
+        const searchResults = await pagefind.search(query);
+        if (resultCount) resultCount.textContent = String(searchResults.results.length);
+
+        if (searchResults.results.length === 0) {
+          if (results) {
+            results.innerHTML = `
+              <div class="p-8 text-center text-muted-foreground">
+                <p>No results found</p>
+                <p class="text-sm mt-1">Try a different keyword</p>
+              </div>
+            `;
+          }
+          return;
+        }
+
+        const fragments = await Promise.all(
+          searchResults.results.slice(0, 10).map(function(r) { return r.data(); })
+        );
+
+        if (results) {
+          results.innerHTML = fragments.map(function(data, index) {
+            return `
+              <a
+                href="${data.url}"
+                class="block p-3 rounded-md hover:bg-accent transition-colors ${index === 0 ? 'bg-accent/50' : ''}"
+                data-result-index="${index}"
+              >
+                <h3 class="font-medium text-sm mb-1">${data.meta.title}</h3>
+                <p class="text-xs text-muted-foreground line-clamp-2">${data.excerpt}</p>
+              </a>
+            `;
+          }).join('');
+        }
+      } catch (e) {
+        console.error('Search error:', e);
+      }
+    }
+
+    // Event listeners
+    var searchTrigger = document.getElementById('search-trigger');
+    if (searchTrigger) {
+      searchTrigger.addEventListener('click', openSearch);
+    }
+    if (backdrop) {
+      backdrop.addEventListener('click', closeSearch);
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeSearch();
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        openSearch();
+      }
+    });
+
+    if (input) {
+      input.addEventListener('input', function(e) {
+        performSearch(e.target.value);
+      });
+    }
+
+    // Expose for global access
+    window.openSearch = openSearch;
+  })();
+</script>

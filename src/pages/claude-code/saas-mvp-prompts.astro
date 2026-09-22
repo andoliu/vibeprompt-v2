@@ -1,0 +1,33 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PromptList from '../../components/PromptList.astro';
+import prompts from '../../data/prompts.json';
+
+const count = prompts.filter((p) => p.tool === 'claude-code' && p.scene === 'saas-mvp').length;
+---
+
+<Layout
+  title={`${count} Best Claude Code Prompts for Building a SaaS MVP (Copy & Paste) | VibePrompt`}
+  description="Copy-ready Claude Code prompts for SaaS MVPs: ruthless scope cutting, Next.js + Supabase + Stripe scaffolding, RLS-first schema design, landing page copy, edge-case seed data and a launch-day hardening pass."
+>
+  <nav class="text-sm text-muted-foreground mb-4">
+    <a href="/" class="hover:text-foreground">Home</a> /
+    <a href="/claude-code-prompts/" class="hover:text-foreground">Claude Code Prompts</a> /
+    SaaS MVP
+  </nav>
+  <h1 class="text-3xl sm:text-4xl font-bold mb-4">Claude Code Prompts for SaaS MVPs</h1>
+  <p class="text-muted-foreground leading-relaxed mb-8 max-w-3xl">
+    An MVP is not a small product — it's an experiment wrapped in the smallest product that can run it. These prompts enforce that order:
+    cut scope before writing code, scaffold the boring-but-critical parts (auth, billing, tenant isolation) in one shot, and harden only what a first-time
+    visitor would actually see. The sequence matters: Scope Cutter → Scaffold → Schema → Copy → Seed → Hardening.
+  </p>
+  <PromptList filter={(p) => p.tool === 'claude-code' && p.scene === 'saas-mvp'} />
+
+  <div class="mt-10 rounded-xl border border-border bg-card p-6">
+    <h2 class="font-semibold mb-2">Related</h2>
+    <ul class="text-sm text-muted-foreground space-y-1.5">
+      <li><a href="/claude-code/debugging-prompts/" class="text-primary hover:underline">Claude Code debugging prompts</a> — for when launch day talks back.</li>
+      <li><a href="/lovable-prompts/" class="text-primary hover:underline">Lovable prompts</a> — faster visual iteration on the landing page.</li>
+    </ul>
+  </div>
+</Layout>

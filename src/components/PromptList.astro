@@ -1,0 +1,59 @@
+---
+import PromptCard from './PromptCard.astro';
+import prompts from '../data/prompts.json';
+import { toolInfo } from '../lib/tools';
+
+interface Props {
+  filter?: (p: (typeof prompts)[number]) => boolean;
+  showFilter?: boolean;
+}
+const { filter = () => true, showFilter = false } = Astro.props;
+const items = prompts.filter(filter);
+const tools = [...new Set(items.map((p) => p.tool))];
+
+const chipBase = 'filter-chip inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors';
+const chipIdle = 'border-border bg-card text-muted-foreground hover:text-foreground hover:border-primary/40';
+const chipOn = 'border-primary/50 bg-primary/10 text-primary';
+---
+
+{showFilter && (
+  <div class="flex flex-wrap items-center gap-2 mb-6">
+    <button class={`${chipBase} ${chipOn}`} data-filter="all">
+      All <span class="text-xs opacity-70">{items.length}</span>
+    </button>
+    {tools.map((t) => (
+      <button class={`${chipBase} ${chipIdle}`} data-filter={t}>
+        {toolInfo(t).label} <span class="text-xs opacity-70">{items.filter((p) => p.tool === t).length}</span>
+      </button>
+    ))}
+  </div>
+)}
+
+<div class="grid gap-5 md:grid-cols-2 items-start">
+  {items.map((p) => (
+    <PromptCard tool={p.tool} title={p.title} prompt={p.prompt} note={p.note} />
+  ))}
+</div>
+
+{showFilter && (
+  <script>
+    const chips = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+    const cards = document.querySelectorAll<HTMLElement>('[data-tool]');
+    chips.forEach((chip) => {
+      chip.addEventListener('click', () => {
+        const f = chip.dataset.filter;
+        chips.forEach((c) => {
+          c.classList.toggle('border-primary/50', c === chip);
+          c.classList.toggle('bg-primary/10', c === chip);
+          c.classList.toggle('text-primary', c === chip);
+          c.classList.toggle('border-border', c !== chip);
+          c.classList.toggle('bg-card', c !== chip);
+          c.classList.toggle('text-muted-foreground', c !== chip);
+        });
+        cards.forEach((card) => {
+          card.style.display = f === 'all' || card.dataset.tool === f ? '' : 'none';
+        });
+      });
+    });
+  </script>
+)}

@@ -1,0 +1,27 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PromptList from '../components/PromptList.astro';
+import prompts from '../data/prompts.json';
+
+const count = prompts.filter((p) => p.tool === 'claude-code').length;
+---
+
+<Layout
+  title={`Claude Code Prompts: ${count}+ Copy-Ready Prompts & Workflows (2026) | VibePrompt`}
+  description="Copy-ready Claude Code prompts: systematic debugging workflows, root-cause analysis, SaaS MVP scaffolding with Next.js + Supabase + Stripe, schema design and launch hardening. Paste into Claude Code and go."
+>
+  <nav class="text-sm text-muted-foreground mb-4"><a href="/" class="hover:text-foreground">Home</a> / Claude Code Prompts</nav>
+  <h1 class="text-3xl sm:text-4xl font-bold mb-4">Claude Code Prompts</h1>
+  <p class="text-muted-foreground leading-relaxed mb-4 max-w-3xl">
+    Claude Code is the most powerful agentic coding tool of 2026 — but most people still prompt it like a chatbot. The prompts below treat Claude Code as a
+    <strong>junior pair with a senior's knowledge</strong>: contracts that stop it from patching before understanding, scaffolds that produce runnable SaaS skeletons in one shot,
+    and debugging workflows that isolate root causes instead of guessing. Every prompt is copy-ready: open it, paste it, replace the angle-bracket placeholders.
+  </p>
+  <p class="text-muted-foreground leading-relaxed mb-8 max-w-3xl">
+    Start with the scene pages if you know what you're doing here:
+    <a href="/claude-code/debugging-prompts/" class="text-primary hover:underline">debugging prompts</a> for bugs,
+    <a href="/claude-code/saas-mvp-prompts/" class="text-primary hover:underline">SaaS MVP prompts</a> for building.
+    New prompts are added every week.
+  </p>
+  <PromptList filter={(p) => p.tool === 'claude-code'} />
+</Layout>

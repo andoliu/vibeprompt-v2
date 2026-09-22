@@ -1,0 +1,12 @@
+{
+  "site": "dist",
+  "glob": "**/*.html",
+  "exclude_selectors": [
+    "nav",
+    "header",
+    "footer",
+    "script",
+    "style"
+  ],
+  "force_language": "en"
+}

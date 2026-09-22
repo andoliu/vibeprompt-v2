@@ -1,0 +1,32 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PromptList from '../components/PromptList.astro';
+import prompts from '../data/prompts.json';
+
+const count = prompts.filter((p) => p.tool === 'jev').length;
+---
+
+<Layout
+  title={`Jev Prompts: ${count} Copy-Ready Decision Templates (Choice, Score & Noul) | VibePrompt`}
+  description="Jev prompt templates using the real TypeSafe AI SDK syntax: Choice, Score and Noul questions for ticket triage, content moderation, lead scoring, search reranking, agent safety gates, model routing and citation checks."
+>
+  <nav class="text-sm text-muted-foreground mb-4"><a href="/" class="hover:text-foreground">Home</a> / Jev Prompts</nav>
+  <h1 class="text-3xl sm:text-4xl font-bold mb-4">Jev Prompts & Decision Templates</h1>
+  <p class="text-muted-foreground leading-relaxed mb-4 max-w-3xl">
+    Jev is the first <strong>System One model</strong>, released by <strong>TypeSafe AI</strong> in limited early access on September 15, 2026.
+    The name nods to Kahneman: instead of generating long chains of reasoning (System 2), Jev answers predefined questions over your data with
+    <strong>typed, calibrated decisions</strong> (System 1) — a Choice from your option set, a Score on your scale, or a Noul probability for yes/no.
+    One call sends a <code class="bg-muted/60 rounded px-1.5 py-0.5 text-sm">state</code> plus all your questions; every question is answered in parallel,
+    in roughly 70–500 ms, with output tokens free.
+  </p>
+  <p class="text-muted-foreground leading-relaxed mb-4 max-w-3xl">
+    So "prompting" Jev means <strong>designing the question set</strong>: closed option lists, clearly described score levels, and confidence thresholds
+    that decide when code should act versus escalate to a human. The templates below follow the real SDK syntax and cover the patterns early adopters
+    are running in production — triage, moderation, scoring, reranking, agent safety, routing and citation checks.
+  </p>
+  <p class="text-muted-foreground leading-relaxed mb-8 max-w-3xl">
+    One honest caveat: "Jev never hallucinates" means it can only return values from your schema — it can still <em>choose</em> the wrong one.
+    Calibrated confidence is your second signal: gate expensive or irreversible actions on it.
+  </p>
+  <PromptList filter={(p) => p.tool === 'jev'} />
+</Layout>

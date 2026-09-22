@@ -1,0 +1,74 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PromptList from '../components/PromptList.astro';
+import prompts from '../data/prompts.json';
+import { TOOLS } from '../lib/tools';
+
+const total = prompts.length;
+const toolCards = Object.entries(TOOLS).map(([id, t]) => ({
+  href: t.href,
+  name: `${t.label} Prompts`,
+  desc: {
+    'claude-code': 'Debugging workflows, MVP scaffolding and session contracts.',
+    cursor: 'Project rules, review checklists and workflow contracts.',
+    lovable: 'Landing pages, auth dashboards and growth flows.',
+    jev: 'Decision templates for the System One model (early access).',
+  }[id] ?? '',
+  count: prompts.filter((p) => p.tool === id).length,
+  badge: t.badge,
+}));
+
+const scenes = [
+  { href: '/claude-code/debugging-prompts/', label: 'Claude Code debugging prompts' },
+  { href: '/claude-code/saas-mvp-prompts/', label: 'Claude Code SaaS MVP prompts' },
+  { href: '/cursor/rules-prompts/', label: 'Cursor rules & .cursorrules templates' },
+];
+---
+
+<Layout
+  title="AI Coding Prompts Library: Copy & Paste for Claude Code, Cursor, Lovable & Jev | VibePrompt"
+  description="Free, copy-ready AI coding prompts for Claude Code, Cursor, Lovable and Jev. Debugging workflows, SaaS MVP scaffolds, project rules and decision templates — find one, copy it, ship it."
+>
+  <section class="py-10 mb-4">
+    <div class="flex flex-wrap items-center justify-center gap-2 mb-5">
+      {Object.values(TOOLS).map((t) => (
+        <span class={`text-xs font-medium rounded-full px-2.5 py-1 ${t.badge}`}>{t.label}</span>
+      ))}
+    </div>
+    <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-center mb-4">AI Coding Prompts Library</h1>
+    <p class="text-lg text-muted-foreground max-w-2xl mx-auto text-center">
+      Copy-ready prompts for Claude Code, Cursor, Lovable and Jev. No sign-up, no fluff — find a prompt, copy it, ship it.
+    </p>
+    <p class="text-sm text-muted-foreground/80 text-center mt-4">
+      <span class="font-semibold text-foreground">{total}</span> prompts · {Object.keys(TOOLS).length} tools · updated weekly
+    </p>
+  </section>
+
+  <section class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-14">
+    {toolCards.map((t) => (
+      <a href={t.href} class="rounded-xl border border-border/70 bg-card p-5 shadow-sm hover:shadow-md hover:border-primary/40 transition-all">
+        <div class="flex items-center justify-between mb-2">
+          <h2 class="font-semibold">{t.name}</h2>
+          <span class="text-xs text-muted-foreground">{t.count}</span>
+        </div>
+        <p class="text-sm text-muted-foreground leading-relaxed">{t.desc}</p>
+      </a>
+    ))}
+  </section>
+
+  <section class="mb-14">
+    <h2 class="text-xl font-bold mb-4">Popular scene pages</h2>
+    <ul class="grid sm:grid-cols-3 gap-4">
+      {scenes.map((s) => (
+        <li>
+          <a href={s.href} class="block rounded-lg border border-border/70 bg-card px-4 py-3 text-sm hover:border-primary/40 hover:shadow-sm transition-all">{s.label} →</a>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section>
+    <h2 class="text-xl font-bold mb-5">All prompts</h2>
+    <PromptList filter={(p) => true} showFilter />
+  </section>
+</Layout>

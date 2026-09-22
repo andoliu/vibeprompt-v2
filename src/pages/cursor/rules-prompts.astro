@@ -1,0 +1,33 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PromptList from '../../components/PromptList.astro';
+import prompts from '../../data/prompts.json';
+
+const count = prompts.filter((p) => p.tool === 'cursor' && p.scene === 'rules').length;
+---
+
+<Layout
+  title={`${count} Copy-Ready .cursorrules & Cursor Prompt Templates (2026) | VibePrompt`}
+  description="Copy-ready .cursorrules templates for Cursor: frontend React+TS+Tailwind rules, Python FastAPI backend rules, a severity-ordered code-review enforcer, and a small-commit workflow contract."
+>
+  <nav class="text-sm text-muted-foreground mb-4">
+    <a href="/" class="hover:text-foreground">Home</a> /
+    <a href="/cursor-prompts/" class="hover:text-foreground">Cursor Prompts</a> /
+    Rules & .cursorrules
+  </nav>
+  <h1 class="text-3xl sm:text-4xl font-bold mb-4">Cursor Rules & .cursorrules Templates</h1>
+  <p class="text-muted-foreground leading-relaxed mb-8 max-w-3xl">
+    A good <code class="bg-muted/60 rounded px-1.5 py-0.5 text-sm">.cursorrules</code> file pays for itself within a day: instead of re-explaining "use Tailwind, not CSS files;
+    typed props; no default exports" in every chat, Cursor applies your conventions to every edit. Copy a template below into the repo root (or
+    <code class="bg-muted/60 rounded px-1.5 py-0.5 text-sm">.cursor/rules/</code> for per-project setup), then adjust the stack line to match your project.
+  </p>
+  <PromptList filter={(p) => p.tool === 'cursor' && p.scene === 'rules'} />
+
+  <div class="mt-10 rounded-xl border border-border bg-card p-6">
+    <h2 class="font-semibold mb-2">Related</h2>
+    <ul class="text-sm text-muted-foreground space-y-1.5">
+      <li><a href="/claude-code/debugging-prompts/" class="text-primary hover:underline">Claude Code debugging prompts</a> — the same contracts, for Claude Code sessions.</li>
+      <li><a href="/cursor-prompts/" class="text-primary hover:underline">All Cursor prompts</a></li>
+    </ul>
+  </div>
+</Layout>

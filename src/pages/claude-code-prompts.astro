@@ -20,7 +20,8 @@ const count = prompts.filter((p) => p.tool === 'claude-code').length;
   <p class="text-muted-foreground leading-relaxed mb-8 max-w-3xl">
     Start with the scene pages if you know what you're doing here:
     <a href="/claude-code/debugging-prompts/" class="text-primary hover:underline">debugging prompts</a> for bugs,
-    <a href="/claude-code/saas-mvp-prompts/" class="text-primary hover:underline">SaaS MVP prompts</a> for building.
+    <a href="/claude-code/saas-mvp-prompts/" class="text-primary hover:underline">SaaS MVP prompts</a> for building,
+    <a href="/claude-code/code-review-prompts/" class="text-primary hover:underline">code review prompts</a> before you merge.
     New prompts are added every week.
   </p>
   <PromptList filter={(p) => p.tool === 'claude-code'} />

@@ -1,0 +1,35 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PromptList from '../../components/PromptList.astro';
+import prompts from '../../data/prompts.json';
+
+const count = prompts.filter((p) => p.tool === 'claude-code' && p.scene === 'code-review').length;
+---
+
+<Layout
+  title={`${count} Best Claude Code Prompts for Code Review (Copy & Paste, 2026) | VibePrompt`}
+  description="Copy-ready Claude Code code review prompts: a skeptical-senior severity-ordered pass, a security-only data-flow review, and a pre-merge readability pass — every finding with file:line and a one-line fix."
+>
+  <nav class="text-sm text-muted-foreground mb-4">
+    <a href="/" class="hover:text-foreground">Home</a> /
+    <a href="/claude-code-prompts/" class="hover:text-foreground">Claude Code Prompts</a> /
+    Code Review
+  </nav>
+  <h1 class="text-3xl sm:text-4xl font-bold mb-4">Claude Code Prompts for Code Review</h1>
+  <p class="text-muted-foreground leading-relaxed mb-8 max-w-3xl">
+    AI reviewers fail in a specific way: they review politely. "Looks good, minor suggestion!" is not a review.
+    These prompts force the opposite posture — severity-ordered checklists that stop at the first category with findings, security passes that
+    follow the data instead of the checklist, and readability passes where every nit comes with its one-line rewrite. No praise, no summary.
+    Pick the pass that matches your stage: correctness first, security before launch, readability last.
+  </p>
+  <PromptList filter={(p) => p.tool === 'claude-code' && p.scene === 'code-review'} />
+
+  <div class="mt-10 rounded-xl border border-border bg-card p-6">
+    <h2 class="font-semibold mb-2">Related</h2>
+    <ul class="text-sm text-muted-foreground space-y-1.5">
+      <li><a href="/claude-code/debugging-prompts/" class="text-primary hover:underline">Claude Code debugging prompts</a> — for after review finds something.</li>
+      <li><a href="/cursor/rules-prompts/" class="text-primary hover:underline">Cursor rules templates</a> — includes a review-enforcer ruleset.</li>
+      <li><a href="/claude-code-prompts/" class="text-primary hover:underline">All Claude Code prompts</a></li>
+    </ul>
+  </div>
+</Layout>

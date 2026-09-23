@@ -1,0 +1,24 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PromptList from '../components/PromptList.astro';
+import prompts from '../data/prompts.json';
+
+const count = prompts.filter((p) => p.tool === 'bolt').length;
+---
+
+<Layout
+  title={`Bolt Prompts: ${count}+ Copy-Ready Full-Stack Build Prompts (2026) | VibePrompt`}
+  description="Copy-ready Bolt (bolt.new) prompts: full-stack CRUD MVPs, admin tables with search and pagination, mobile-first PWAs and REST API prototypes with built-in docs pages."
+>
+  <nav class="text-sm text-muted-foreground mb-4"><a href="/" class="hover:text-foreground">Home</a> / Bolt Prompts</nav>
+  <h1 class="text-3xl sm:text-4xl font-bold mb-4">Bolt Prompts</h1>
+  <p class="text-muted-foreground leading-relaxed mb-4 max-w-3xl">
+    Bolt (bolt.new by StackBlitz) is the tool when you want the <strong>whole stack in one sandbox</strong> — frontend, backend, database, running in the browser.
+    Its failure mode is scope drift: ask vaguely and you get an impressive-looking app with three unrequested features and no delete confirmation.
+    These prompts pin the scope down: exact views, exact endpoints, seed data, "keep the code boring".
+  </p>
+  <p class="text-muted-foreground leading-relaxed mb-8 max-w-3xl">
+    Best use: validating a workflow with real data by tomorrow — MVPs, internal tools, API prototypes for client demos.
+  </p>
+  <PromptList filter={(p) => p.tool === 'bolt'} />
+</Layout>

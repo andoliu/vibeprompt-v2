@@ -1,0 +1,25 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PromptList from '../components/PromptList.astro';
+import prompts from '../data/prompts.json';
+
+const count = prompts.filter((p) => p.tool === 'v0').length;
+---
+
+<Layout
+  title={`v0 Prompts: ${count}+ Copy-Ready UI Generation Prompts (2026) | VibePrompt`}
+  description="Copy-ready v0 prompts: shadcn-style SaaS landing pages, analytics dashboards, pricing pages with toggles and waitlist forms with validation. Paste into v0 and get a Next.js + Tailwind page."
+>
+  <nav class="text-sm text-muted-foreground mb-4"><a href="/" class="hover:text-foreground">Home</a> / v0 Prompts</nav>
+  <h1 class="text-3xl sm:text-4xl font-bold mb-4">v0 Prompts</h1>
+  <p class="text-muted-foreground leading-relaxed mb-4 max-w-3xl">
+    v0 (by Vercel) generates React + Tailwind + shadcn/ui from a description — so the quality of what you get back depends almost entirely on
+    how precisely you name the sections, components and states. The prompts below speak v0's native vocabulary: sticky navs, tier cards with
+    "Most popular" badges, collapsible sidebars, range toggles, success states. Name it exactly and v0 nails it; leave it vague and you'll get a generic page.
+  </p>
+  <p class="text-muted-foreground leading-relaxed mb-8 max-w-3xl">
+    Two habits make v0 output production-usable: always specify <strong>real copy instead of lorem ipsum</strong>, and always describe the
+    <strong>states</strong> (loading, error, success) — not just the happy path.
+  </p>
+  <PromptList filter={(p) => p.tool === 'v0'} />
+</Layout>

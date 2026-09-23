@@ -19,6 +19,21 @@ export const TOOLS: Record<string, { label: string; badge: string; href: string 
     badge: 'bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-500/20',
     href: '/lovable-prompts/',
   },
+  v0: {
+    label: 'v0',
+    badge: 'bg-neutral-500/10 text-neutral-700 dark:text-neutral-300 border border-neutral-500/20',
+    href: '/v0-prompts/',
+  },
+  bolt: {
+    label: 'Bolt',
+    badge: 'bg-violet-500/10 text-violet-700 dark:text-violet-400 border border-violet-500/20',
+    href: '/bolt-prompts/',
+  },
+  windsurf: {
+    label: 'Windsurf',
+    badge: 'bg-teal-500/10 text-teal-700 dark:text-teal-400 border border-teal-500/20',
+    href: '/windsurf-prompts/',
+  },
 };
 
 export function toolInfo(tool: string) {

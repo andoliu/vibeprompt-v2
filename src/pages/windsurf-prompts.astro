@@ -1,0 +1,24 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PromptList from '../components/PromptList.astro';
+import prompts from '../data/prompts.json';
+
+const count = prompts.filter((p) => p.tool === 'windsurf').length;
+---
+
+<Layout
+  title={`Windsurf Prompts & Rules: ${count}+ Copy-Ready Templates (2026) | VibePrompt`}
+  description="Copy-ready Windsurf prompts and .windsurfrules templates: project rules, Cascade plan-build-verify workflows, behavior-preserving refactors and test suite bootstrapping."
+>
+  <nav class="text-sm text-muted-foreground mb-4"><a href="/" class="hover:text-foreground">Home</a> / Windsurf Prompts</nav>
+  <h1 class="text-3xl sm:text-4xl font-bold mb-4">Windsurf Prompts & Rules</h1>
+  <p class="text-muted-foreground leading-relaxed mb-4 max-w-3xl">
+    Windsurf's Cascade agent is powerful in direct proportion to how well you constrain it. Two levers matter: a
+    <code class="bg-muted/60 rounded px-1.5 py-0.5 text-sm">.windsurfrules</code> file that applies to every interaction (stack, testing, commit conventions,
+    dependency discipline), and per-task workflows that force the <strong>plan → build → verify</strong> order instead of a 30-file sweep.
+  </p>
+  <p class="text-muted-foreground leading-relaxed mb-8 max-w-3xl">
+    Start with the rules template, then use the workflow prompts for anything bigger than a one-line change.
+  </p>
+  <PromptList filter={(p) => p.tool === 'windsurf'} />
+</Layout>

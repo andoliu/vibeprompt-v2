@@ -8,11 +8,14 @@ const total = prompts.length;
 const toolCards = Object.entries(TOOLS).map(([id, t]) => ({
   href: t.href,
   name: `${t.label} Prompts`,
-  desc: {
+    desc: {
     'claude-code': 'Debugging workflows, MVP scaffolding and session contracts.',
     cursor: 'Project rules, review checklists and workflow contracts.',
     lovable: 'Landing pages, auth dashboards and growth flows.',
     jev: 'Decision templates for the System One model (early access).',
+    v0: 'shadcn-style pages, dashboards and forms.',
+    bolt: 'Full-stack MVPs, internal tools and API prototypes.',
+    windsurf: 'Rules, Cascade workflows and test-first refactors.',
   }[id] ?? '',
   count: prompts.filter((p) => p.tool === id).length,
   badge: t.badge,
@@ -21,6 +24,7 @@ const toolCards = Object.entries(TOOLS).map(([id, t]) => ({
 const scenes = [
   { href: '/claude-code/debugging-prompts/', label: 'Claude Code debugging prompts' },
   { href: '/claude-code/saas-mvp-prompts/', label: 'Claude Code SaaS MVP prompts' },
+  { href: '/claude-code/code-review-prompts/', label: 'Claude Code code review prompts' },
   { href: '/cursor/rules-prompts/', label: 'Cursor rules & .cursorrules templates' },
 ];
 ---

@@ -22,6 +22,16 @@ const { title, description = 'Copy-ready AI coding prompts for Claude Code, Curs
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
     <title>{title}</title>
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="VibePrompt" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content="https://vibeprompt.online/og-image.png" />
+    <meta property="og:url" content={Astro.url.pathname === '/' ? 'https://vibeprompt.online/' : `https://vibeprompt.online${Astro.url.pathname}`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content="https://vibeprompt.online/og-image.png" />
     <ViewTransitions />
     <Analytics />
     <script is:inline>

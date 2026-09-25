@@ -50,7 +50,9 @@ const canonicalUrl = Astro.url.pathname === '/' ? 'https://vibeprompt.online/' :
     <footer class="border-t border-border/40 mt-16">
       <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-sm text-muted-foreground flex flex-col sm:flex-row items-center justify-between gap-3">
         <p>© 2026 VibePrompt — Copy-ready prompts for AI coding tools.</p>
-        <nav class="flex gap-5">
+        <nav class="flex gap-5 flex-wrap items-center justify-center">
+          <span class="text-muted-foreground/60">Featured on:</span>
+          <a href="https://woy.ai/" class="hover:text-foreground" rel="noopener">Woy AI</a>
           <a href="/about/" class="hover:text-foreground">About</a>
           <a href="/privacy/" class="hover:text-foreground">Privacy</a>
           <a href="/contact/" class="hover:text-foreground">Contact</a>

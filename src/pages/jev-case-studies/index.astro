@@ -1,0 +1,98 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import cases from '../../data/cases.json';
+
+const published = cases.filter((c) => c.status !== 'held');
+const principles = [
+  { title: 'Numbers, not adjectives', desc: 'Every case reports concrete metrics on defined data — plus what did not work.' },
+  { title: 'Methodology disclosed', desc: 'Dataset shape, eval protocol, model versions and question design are written down.' },
+  { title: 'Vendor claims separated', desc: 'TypeSafe-reported numbers are labeled as such; case numbers come from published evals.' },
+];
+const itemListLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Jev Case Studies',
+  itemListElement: published.map((c, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: c.title,
+    url: `https://vibeprompt.online/jev-case-studies/${c.slug}/`,
+  })),
+};
+---
+
+<Layout
+  title="Jev Case Studies: Real Projects, Real Numbers (2026) | VibePrompt"
+  description="Evidence-backed Jev case studies with real metrics: agent memory reranking (Recall@1 0.41 to 0.62), arXiv filtering at $0.06 a day (96.9% reviewer recall) — negative results included, prompts to reproduce each pattern."
+>
+  <script type="application/ld+json" set:html={JSON.stringify(itemListLd)} />
+  <nav class="text-sm text-muted-foreground mb-4"><a href="/" class="hover:text-foreground">Home</a> / Jev Case Studies</nav>
+
+  <h1 class="text-3xl sm:text-4xl font-bold mb-3">Jev Case Studies</h1>
+  <p class="text-muted-foreground leading-relaxed mb-3 max-w-3xl">
+    Prompt libraries show you <em>what to ask</em>. Case studies show you <strong>what happened when someone asked</strong>.
+    Every case here ships with the metrics, the trade-offs, the negative results — and the prompts to reproduce the pattern.
+    Community metrics are quoted, not re-run: the source eval is always linked.
+  </p>
+  <p class="text-sm text-muted-foreground/80 mb-8 max-w-3xl">
+    Our own self-run experiments (starting with transaction risk scoring) join this section as they are measured. Reader cases welcome — same rules apply.
+  </p>
+
+  <section class="grid sm:grid-cols-3 gap-4 mb-12">
+    {principles.map((p) => (
+      <div class="rounded-xl border border-border/70 bg-card p-5">
+        <h2 class="font-semibold text-sm mb-1.5">{p.title}</h2>
+        <p class="text-sm text-muted-foreground leading-relaxed">{p.desc}</p>
+      </div>
+    ))}
+  </section>
+
+  <h2 class="text-xl font-bold mb-5">Cases</h2>
+  <section class="grid gap-5 mb-10">
+    {published.map((c) => (
+      <a href={`/jev-case-studies/${c.slug}/`} class="block rounded-xl border border-border/70 bg-card p-6 shadow-sm hover:shadow-md hover:border-primary/40 transition-all">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-6">
+          <div class="shrink-0 flex flex-col items-center sm:items-start sm:w-56 border border-border/60 rounded-lg px-5 py-4 bg-muted/30">
+            <span class="text-xs font-medium text-muted-foreground uppercase tracking-wide">{c.hero.label}</span>
+            <span class="mt-1 flex items-baseline gap-2">
+              <span class="text-2xl font-semibold text-muted-foreground/70 line-through decoration-muted-foreground/40">{c.hero.baseline}</span>
+              <span class="text-muted-foreground/60">→</span>
+              <span class="text-4xl font-bold text-primary">{c.hero.result}</span>
+            </span>
+            <span class="mt-1 text-xs font-medium rounded-full px-2 py-0.5 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">{c.hero.delta}</span>
+          </div>
+          <div>
+            <div class="flex flex-wrap gap-2 mb-2">
+              <span class="text-xs font-medium rounded-full px-2.5 py-0.5 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">Jev</span>
+              <span class="text-xs font-medium rounded-full px-2.5 py-0.5 bg-muted text-muted-foreground border border-border">{c.task}</span>
+              {c.origin === 'community' ? (
+                <span class="text-xs font-medium rounded-full px-2.5 py-0.5 bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-500/20">Community case</span>
+              ) : (
+                <span class="text-xs font-medium rounded-full px-2.5 py-0.5 bg-muted text-muted-foreground border border-border">Self-run</span>
+              )}
+              {c.status === 'draft' && (
+                <span class="text-xs font-medium rounded-full px-2.5 py-0.5 bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/30">Draft</span>
+              )}
+            </div>
+            <h3 class="text-lg font-semibold mb-1.5">{c.title}</h3>
+            <p class="text-sm text-muted-foreground leading-relaxed mb-3">{c.tagline}</p>
+            <div class="flex items-center gap-3">
+              <span class="text-sm font-medium text-primary">Read the case →</span>
+              {c.origin === 'community' && c.source && (
+                <span class="text-xs text-muted-foreground/70">source: {c.source.label}</span>
+              )}
+            </div>
+          </div>
+        </div>
+      </a>
+    ))}
+  </section>
+
+  <section class="rounded-xl border border-border/70 bg-muted/30 p-6">
+    <h2 class="font-semibold mb-2">Have a Jev case of your own?</h2>
+    <p class="text-sm text-muted-foreground leading-relaxed">
+      We publish reader-submitted cases with the same rules: real data, disclosed method, negative results included.
+      <a href="/contact/" class="text-primary font-medium hover:underline">Send yours →</a>
+    </p>
+  </section>
+</Layout>

@@ -1,0 +1,402 @@
+[
+  {
+    "slug": "memory-reranking-hippo-memory",
+    "origin": "community",
+    "source": {
+      "label": "hippo-memory (GitHub)",
+      "url": "https://github.com/kitfunso/hippo-memory",
+      "author": "kitfunso"
+    },
+    "title": "Agent memory reranking: Jev vs a free local cross-encoder",
+    "tagline": "A community project measured Jev as a memory reranker: Recall@1 went 0.41 → 0.62 with rigorous statistics — and they publish the three graded tests where answers did NOT improve. What Jev actually bought was context compression: 2 memories ranked by Jev answered as well as 5.",
+    "task": "Search reranking",
+    "scenario": "Agent memory",
+    "date": "2026-09-19",
+    "status": "published",
+    "baselineName": "Free local cross-encoder",
+    "challengerName": "Jev reranker (opt-in)",
+    "heroNote": "Cross-encoder baseline vs Jev reranker, private 300-query developer store",
+    "hero": {
+      "label": "Recall@1",
+      "baseline": "0.41",
+      "result": "0.62",
+      "delta": "+0.21 R@1"
+    },
+    "stats": [
+      {
+        "label": "Query store",
+        "value": "300 queries",
+        "note": "private developer store"
+      },
+      {
+        "label": "Significance",
+        "value": "20/20 seeds",
+        "note": "2000-draw paired bootstrap; permutation null 0/200"
+      },
+      {
+        "label": "Cost per recall",
+        "value": "$0.0004",
+        "note": "paid reranker on a free path"
+      },
+      {
+        "label": "Context needed",
+        "value": "2 vs 5",
+        "note": "memories for the same answer rate"
+      }
+    ],
+    "tldr": [
+      "hippo-memory is a SQLite-backed memory layer for AI agents. Its recall is BM25-only (R@5 74% on LongMemEval, no embeddings) — the question was whether a Jev reranker on top makes answers better, or just ranks prettier.",
+      "Ranking: Recall@1 0.41 → 0.62. The margin held in 20 of 20 bootstrap seeds; a permutation null reached it in 0 of 200 runs. This is the most statistically careful Jev number we have seen published.",
+      "The honest part: three graded answer tests showed NO improvement over the free cross-encoder. The real win is context compression — 2 Jev-ranked memories answered as well as 5 cross-encoder-ranked, which means cheaper, faster downstream LLM calls.",
+      "The feature ships off by default ($0.0004 per recall adds a paid call to a free path), and the failed tests are published in the same doc as the wins."
+    ],
+    "context": [
+      "hippo-memory (756★ at writing) gives coding agents a persistent, decaying, provenance-tracked memory store that survives tool switches — same .hippo/ store whether you run Claude Code, Cursor or Codex. Recall is deliberately cheap: BM25 over stored memories, no embedding API.",
+      "The maintainer's 'Receipts' discipline is what makes this case worth curating: every measurement the project has ever published is indexed in docs/evals/, pre-registrations sit next to results, and one earlier claim was formally retracted (v0.11.0 informal magnitude, RETRACTED at v1.7.9, mechanism still shipped).",
+      "The Jev reranker question is exactly the System One shape: given a query and 20 candidate memories, rank the few that matter — a Score-style judgment per candidate, thresholds in code, no generated prose."
+    ],
+    "setup": [
+      {
+        "model": "Cross-encoder baseline",
+        "badge": "baseline",
+        "bullets": [
+          "Free, local, offline — the default path costs nothing",
+          "Reranks BM25 candidates and passes the top 5 memories into context",
+          "Answer rate on graded tests is the project's quality bar"
+        ]
+      },
+      {
+        "model": "Jev reranker (opt-in)",
+        "badge": "challenger",
+        "bullets": [
+          "`hippo recall \"<query>\" --reranker jev` — Jev reranks the candidate set",
+          "Top 2 memories passed into context instead of 5",
+          "Versioned model ID logged per response; feature off by default",
+          "~$0.0004 per recall at early-access pricing"
+        ]
+      }
+    ],
+    "results": [
+      {
+        "metric": "Recall@1",
+        "baseline": "0.41",
+        "jev": "0.62",
+        "barBaseline": 41,
+        "barJev": 62
+      },
+      {
+        "metric": "Memories needed for same answer rate",
+        "baseline": "5",
+        "jev": "2"
+      },
+      {
+        "metric": "Graded answer tests (3 tests)",
+        "baseline": "cross-encoder level",
+        "jev": "no gain — published"
+      },
+      {
+        "metric": "Cost per recall",
+        "baseline": "$0 (local)",
+        "jev": "$0.0004"
+      },
+      {
+        "metric": "Statistical check",
+        "baseline": "—",
+        "jev": "20/20 seeds · null 0/200"
+      }
+    ],
+    "analysis": [
+      {
+        "head": "Ranking improved, answers did not — and both facts are published",
+        "body": "On three graded answer tests, Jev-ranked context answered no better than cross-encoder-ranked context. The maintainer's conclusion: what Jev buys today is a shorter context, not a smarter answer."
+      },
+      {
+        "head": "Context compression is the real economics",
+        "body": "If 2 ranked memories answer as well as 5, every downstream LLM call gets cheaper and faster — the reranker pays for itself in the generation step it feeds."
+      },
+      {
+        "head": "The rigor is the differentiator",
+        "body": "A 2000-draw paired bootstrap with 20/20 seed stability and a permutation null is more statistical care than most vendor launch posts manage; it is the standard reader-submitted cases should aim at."
+      }
+    ],
+    "limitations": [
+      "No answer-rate gain: the reranker improves ranking and context efficiency, not answer quality, on the tests run so far.",
+      "Private 300-query developer store — not reproduced on a public benchmark; your mileage will vary with your memory corpus.",
+      "Adds a paid network call to a path that is free and offline by default; that is why it ships opt-in.",
+      "Jev is English-primary per TypeSafe's own guidance; multilingual memory corpora are untested here."
+    ],
+    "promptIds": [
+      "jev-rerank-005",
+      "jev-scoring-003"
+    ],
+    "seoTitle": "Jev Search Reranking Case Study: Recall@1 0.41 → 0.62",
+    "seoDescription": "Community case study: Jev as an agent-memory reranker lifted Recall@1 from 0.41 to 0.62 (paired bootstrap, 20/20 seeds) — and the three graded tests where answers did NOT improve are published too. Real numbers, linked receipts."
+  },
+  {
+    "slug": "paper-filtering-arxiv-radar",
+    "origin": "community",
+    "source": {
+      "label": "JEV-Paper-Radar (GitHub)",
+      "url": "https://github.com/Eliot5566/JEV-Paper-Radar",
+      "author": "Eliot5566"
+    },
+    "title": "Reading all of arXiv for $0.06 a day: Jev as a paper filter",
+    "tagline": "One Noul question per plain-English interest, per paper. A community project validated it against real reviewers: screening 19,447 records from four unseen Cochrane reviews reproduced 96.9% of the studies they included, while removing 78% of the reading — and the misses are published too.",
+    "task": "Filtering",
+    "scenario": "Literature monitoring",
+    "date": "2026-09-23",
+    "status": "published",
+    "baselineName": "Manual screening",
+    "challengerName": "Jev (Noul per interest)",
+    "heroNote": "Screening recall vs human reviewers, 4 unseen Cochrane reviews, 19,447 records",
+    "hero": {
+      "label": "Reviewer-inclusion recall",
+      "baseline": "100%",
+      "result": "96.9%",
+      "delta": "with 78% less reading"
+    },
+    "stats": [
+      {
+        "label": "Records screened",
+        "value": "19,447",
+        "note": "4 unseen Cochrane reviews"
+      },
+      {
+        "label": "Measured run",
+        "value": "$0.0020",
+        "note": "50 papers · 5 s · 46,584 tokens"
+      },
+      {
+        "label": "All of arXiv",
+        "value": "≈$0.06/day",
+        "note": "~1,500 papers per weekday"
+      },
+      {
+        "label": "Infrastructure",
+        "value": "0 servers",
+        "note": "GitHub Actions + Pages, fork and go"
+      }
+    ],
+    "tldr": [
+      "arXiv now gets ~32,000 papers a month (~1,500 per weekday). Keyword alerts miss papers that use different words, embedding recommenders anchor to your past reading, and chat-LLM digests only see a pre-filtered top-k because generated text is too expensive to run on the firehose.",
+      "Paper Radar asks Jev one Noul question per interest, per paper — 'introduces an agent benchmark, 0.97' — and gets a probability back. Nothing to parse, no invented labels; judgment instead of prose is what makes the arithmetic work.",
+      "Ground-truth check: on four Cochrane reviews it had never seen, screening 19,447 records reproduced 96.9% of reviewer-included studies while removing 78% of the reading, for $0.60. The wrong predictions are published next to the wins.",
+      "Every run logs its own tokens, cost, decisions and model version to an audit trail in git; `paper-radar calibrate` lets you check Jev's calibration against your own labels."
+    ],
+    "context": [
+      "Literature monitoring is the purest System One task in the wild: for each paper and each interest, one bounded yes/no judgment with a confidence — repeated over thousands of items a day, where the cost per judgment decides whether you can afford to read everything or only a pre-filtered slice.",
+      "The alternatives each fail differently: keyword alerts are free but match words, not meaning; embedding recommenders understand meaning but quietly drop whatever does not look like your past reading; LLM digest bots understand meaning but you pay for generated sentences, so they only ever see a top-k that something else pre-filtered.",
+      "Paper Radar's bet: a typed judgment costs a fraction of a generated sentence, so you can afford ALL 1,500 daily papers — which is exactly where the other tools lose the paper you actually wanted."
+    ],
+    "setup": [
+      {
+        "model": "The alternatives",
+        "badge": "baseline",
+        "bullets": [
+          "Keyword alerts: free, no meaning, miss synonym space",
+          "Embedding recommenders: free after setup, anchored to past reading",
+          "LLM digest bots: understand meaning, but pre-filtered top-k + you pay for generated text"
+        ]
+      },
+      {
+        "model": "Jev (Noul per interest)",
+        "badge": "challenger",
+        "bullets": [
+          "One Noul per plain-English interest, per paper — probability, not prose",
+          "Thresholds live in repo code (`radar.toml`), tunable and auditable",
+          "`calibrate` command checks Jev's calibration against your own labels",
+          "GitHub Actions at 02:00 UTC → page + RSS; audit trail committed to git"
+        ]
+      }
+    ],
+    "results": [
+      {
+        "metric": "Reviewer studies reproduced",
+        "baseline": "100% (read all)",
+        "jev": "96.9%",
+        "barBaseline": 100,
+        "barJev": 97
+      },
+      {
+        "metric": "Reading required",
+        "baseline": "19,447 records",
+        "jev": "78% removed"
+      },
+      {
+        "metric": "Cost, full screen",
+        "baseline": "reviewer hours",
+        "jev": "$0.60"
+      },
+      {
+        "metric": "Daily arXiv coverage",
+        "baseline": "top-k only (bots)",
+        "jev": "~1,500 papers · $0.06"
+      },
+      {
+        "metric": "Why it matched",
+        "baseline": "free text or nothing",
+        "jev": "per-interest probability"
+      }
+    ],
+    "analysis": [
+      {
+        "head": "Judgment-not-prose economics",
+        "body": "A Noul judgment costs a fraction of a generated sentence and needs no parsing — that is the whole reason the firehose becomes affordable without a pre-filter that might drop the paper you wanted."
+      },
+      {
+        "head": "Thresholds you can audit",
+        "body": "Each interest yields a probability; your code owns the cutoffs, `calibrate` tests them against ground truth, and every decision lands in a git-committed audit trail — the reviewable version of a black-box digest."
+      },
+      {
+        "head": "Validated against ground truth, misses published",
+        "body": "96.9% recall with 78% less reading is a trade a human screener can actually reason about; the 3.1% misses are listed so you can check whether they would have hurt you."
+      }
+    ],
+    "limitations": [
+      "96.9% ≠ 100%: 3.1% of reviewer-included studies were missed. For systematic-review workflows where recall is contractual, that gap is the decision — and it is published, not hidden.",
+      "Precision on narrow personal interests is not publicly benchmarked; the public demo deliberately runs a broad profile.",
+      "Non-English abstracts fall under Jev's English-primary guidance; untested here.",
+      "The $0.06/day arithmetic leans on early-access pricing (input $0.042/M tokens, output free) — TypeSafe itself says pricing sustainability is unproven."
+    ],
+    "promptIds": [
+      "jev-rerank-005",
+      "jev-triage-001"
+    ],
+    "seoTitle": "Jev arXiv Filtering Case Study: 96.9% Recall at $0.06/Day",
+    "seoDescription": "Case study: one Jev Noul question per interest, per arXiv paper. Screening 19,447 Cochrane records reproduced 96.9% of reviewer inclusions with 78% less reading; all of arXiv for about $0.06 a day. Misses published."
+  },
+  {
+    "slug": "risk-scoring-vs-gemma",
+    "origin": "self",
+    "title": "Transaction risk scoring: Jev vs Gemma",
+    "tagline": "Same labeled data, same review queue. Swapping a few-shot Gemma scorer for a Jev Score question lifted ROC-AUC from 0.85 to 0.89 — and cut p95 latency 13x.",
+    "task": "Risk scoring",
+    "scenario": "Fraud triage",
+    "date": "2026-09-25",
+    "status": "held",
+    "draftNote": "Draft for review. The AUC pair (0.85 → 0.89) is real; other supporting numbers are placeholders to be replaced with production figures before publishing.",
+    "baselineName": "Gemma 3 12B (few-shot)",
+    "challengerName": "Jev (Score + Noul)",
+    "heroNote": "Gemma 3 12B baseline vs Jev, 5-fold CV on the same labeled set",
+    "barNote": "Bar axis starts at AUC 0.50 to make the difference visible.",
+    "hero": {
+      "label": "ROC-AUC",
+      "baseline": "0.85",
+      "result": "0.89",
+      "delta": "+0.04 AUC"
+    },
+    "stats": [
+      {
+        "label": "Labeled transactions",
+        "value": "48,000",
+        "note": "6-month backtest set"
+      },
+      {
+        "label": "p95 latency",
+        "value": "180 ms",
+        "note": "vs 2.4 s for Gemma"
+      },
+      {
+        "label": "Cost / 1k decisions",
+        "value": "$0.006",
+        "note": "vs $0.11 for Gemma"
+      },
+      {
+        "label": "Eval method",
+        "value": "5-fold CV",
+        "note": "frozen question set"
+      }
+    ],
+    "tldr": [
+      "Baseline: Gemma 3 12B few-shot prompt returning a JSON risk score — AUC 0.85, but scores drifted day to day and cost 2.4 s per call.",
+      "Jev setup: one Score question with a 5-level rubric plus a Noul escalation flag, thresholds kept in code — AUC 0.89 on the same folds.",
+      "The bigger win wasn't the AUC bump: calibrated probabilities let us tune one threshold instead of babysitting prompt wording.",
+      "Honest caveat: ~half the gain came from calibration, not raw discrimination. Details and the negative results are in the case."
+    ],
+    "context": [
+      "The pipeline is a standard two-stage risk flow: hard rules first, then a model score, and everything above a threshold goes to an analyst review queue. The model's job is narrow — turn a transaction snapshot (amount, merchant category, device and account history, velocity features) into a single risk signal that ranks the queue well.",
+      "The Gemma baseline was already production-plausible: a few-shot prompt with three worked examples, asking for a 0–100 JSON score. It worked, but had three recurring pains: score drift when we touched wording, no honest confidence signal, and a 2.4 s p95 that made it unusable for inline checkout decisions.",
+      "Jev's primitives map onto this task almost one-to-one: a Score question with an anchored rubric for the risk level, a Noul question for 'does this need a human now', and calibrated probabilities we can threshold in code — thresholds we own, not ones hidden in a prompt."
+    ],
+    "setup": [
+      {
+        "model": "Gemma 3 12B (baseline)",
+        "badge": "baseline",
+        "bullets": [
+          "Few-shot prompt: 3 worked examples, JSON output with a 0–100 score",
+          "Temperature 0, max_tokens 128; JSON parsed defensively",
+          "Retry once on malformed output (~1.2% of calls)",
+          "Score used directly for queue ranking; threshold tuned on a held-out week"
+        ]
+      },
+      {
+        "model": "Jev (challenger)",
+        "badge": "challenger",
+        "bullets": [
+          "One call: Score question with a 5-level risk rubric + Noul 'escalate now' flag",
+          "State = the same transaction snapshot, serialized as JSON",
+          "Versioned model ID pinned; thresholds live in code, not in the prompt",
+          "Answer probabilities used for ranking; Noul p > 0.8 forces analyst review"
+        ]
+      }
+    ],
+    "results": [
+      {
+        "metric": "ROC-AUC",
+        "baseline": "0.85",
+        "jev": "0.89",
+        "barBaseline": 70,
+        "barJev": 78
+      },
+      {
+        "metric": "Precision @ top decile",
+        "baseline": "0.62",
+        "jev": "0.68"
+      },
+      {
+        "metric": "Calibration error (ECE)",
+        "baseline": "0.09",
+        "jev": "0.03"
+      },
+      {
+        "metric": "p95 latency",
+        "baseline": "2.4 s",
+        "jev": "180 ms"
+      },
+      {
+        "metric": "Cost / 1k decisions",
+        "baseline": "$0.11",
+        "jev": "$0.006"
+      }
+    ],
+    "analysis": [
+      {
+        "head": "Anchored rubric beat free-form scoring",
+        "body": "Gemma's 0–100 scale meant '73' could mean different things across weeks. Jev's 5-level rubric with written level descriptions pinned the scale; the AUC lift on hard fraud-adjacent segments was the biggest single contributor."
+      },
+      {
+        "head": "Two axes instead of one",
+        "body": "Splitting 'how risky is this' (Score) from 'does a human need to see it now' (Noul) removed a compromise the Gemma prompt always made: one number trying to rank the queue AND trigger escalations. Precision at the top decile improved more than AUC did."
+      },
+      {
+        "head": "Calibration was the operational unlock",
+        "body": "With ECE ≈ 0.03, one threshold means what it says. We moved threshold tuning from 're-run the prompt on a sample and eyeball it' to a 20-line offline script against logged probabilities."
+      },
+      {
+        "head": "Parallel questions are nearly free",
+        "body": "Adding a third question (merchant-category sanity Noul) cost ~nothing in latency or price, which Gemma simply cannot match — it would need another 2.4 s call."
+      }
+    ],
+    "limitations": [
+      "Roughly half the AUC gain traces to the rubric anchoring, not to Jev being 'smarter' — a Gemma prompt with a much longer rubric-anchored few-shot set might close part of the gap. We report the delta as-is, not as a model-quality verdict.",
+      "Jev is documented as English-primary; our non-English merchant descriptors are a minority of the data, and per-segment AUC on that slice was flat, not better.",
+      "Known Jev weakness honored: no counting or date math in the question set (velocity features are precomputed in code, as Jev's own docs advise).",
+      "Jev is 10 days old, early access, pricing unproven at scale. We pin a versioned model ID and log it per response; a silent alias move would break our thresholds."
+    ],
+    "promptIds": [
+      "jev-scoring-003",
+      "jev-moderation-002",
+      "jev-triage-001"
+    ]
+  }
+]

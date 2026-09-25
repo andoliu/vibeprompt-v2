@@ -1,0 +1,232 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PromptList from '../../components/PromptList.astro';
+import cases from '../../data/cases.json';
+
+export function getStaticPaths() {
+  return cases
+    .filter((c) => c.status !== 'held')
+    .map((c) => ({ params: { slug: c.slug }, props: { case: c } }));
+}
+
+const c = Astro.props.case;
+const others = cases.filter((o) => o.slug !== c.slug && o.status !== 'held');
+const canonicalUrl = `https://vibeprompt.online/jev-case-studies/${c.slug}/`;
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: c.title,
+  description: c.seoDescription ?? c.tagline,
+  datePublished: c.date,
+  inLanguage: 'en',
+  image: 'https://vibeprompt.online/og-image.png',
+  author: { '@type': 'Organization', name: 'VibePrompt', url: 'https://vibeprompt.online/' },
+  publisher: { '@type': 'Organization', name: 'VibePrompt', url: 'https://vibeprompt.online/' },
+  mainEntityOfPage: canonicalUrl,
+  about: 'Jev (TypeSafe AI System One model)',
+};
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://vibeprompt.online/' },
+    { '@type': 'ListItem', position: 2, name: 'Jev Case Studies', item: 'https://vibeprompt.online/jev-case-studies/' },
+    { '@type': 'ListItem', position: 3, name: c.title, item: canonicalUrl },
+  ],
+};
+---
+
+<Layout
+  title={`${c.seoTitle ?? `${c.title}: ${c.hero.label} ${c.hero.baseline} → ${c.hero.result} (Case Study)`} | VibePrompt`}
+  description={c.seoDescription ?? c.tagline}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbLd)} />
+  <nav class="text-sm text-muted-foreground mb-4">
+    <a href="/" class="hover:text-foreground">Home</a> / <a href="/jev-case-studies/" class="hover:text-foreground">Jev Case Studies</a> / {c.title}
+  </nav>
+
+  {c.status === 'draft' && (
+    <div class="mb-6 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-400">
+      <strong>Draft for review.</strong> {c.draftNote?.replace(/^Draft for review\.?\s*/i, '') ?? 'Supporting numbers are placeholders to be replaced before publishing.'}
+    </div>
+  )}
+
+  <div class="flex flex-wrap gap-2 mb-3">
+    <span class="text-xs font-medium rounded-full px-2.5 py-0.5 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">Jev</span>
+    <span class="text-xs font-medium rounded-full px-2.5 py-0.5 bg-muted text-muted-foreground border border-border">{c.task}</span>
+    <span class="text-xs font-medium rounded-full px-2.5 py-0.5 bg-muted text-muted-foreground border border-border">{c.scenario}</span>
+    {c.origin === 'community' ? (
+      <a href={c.source?.url} target="_blank" rel="noopener" class="text-xs font-medium rounded-full px-2.5 py-0.5 bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-500/20 hover:bg-blue-500/20 transition-colors">Community case ↗</a>
+    ) : (
+      <span class="text-xs font-medium rounded-full px-2.5 py-0.5 bg-muted text-muted-foreground border border-border">Self-run experiment</span>
+    )}
+    <span class="text-xs font-medium rounded-full px-2.5 py-0.5 bg-muted text-muted-foreground border border-border">{c.date}</span>
+  </div>
+
+  <h1 class="text-3xl sm:text-4xl font-bold mb-3">{c.title}</h1>
+  <p class="text-muted-foreground leading-relaxed mb-8 max-w-3xl">{c.tagline}</p>
+
+  <!-- Hero metric -->
+  <section class="rounded-xl border border-border/70 bg-card p-6 sm:p-8 mb-6 shadow-sm">
+    <div class="flex flex-col sm:flex-row sm:items-end gap-6 sm:gap-10">
+      <div>
+        <div class="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">{c.hero.label}</div>
+        <div class="flex items-baseline gap-3">
+          <span class="text-3xl sm:text-4xl font-semibold text-muted-foreground/70 line-through decoration-muted-foreground/40">{c.hero.baseline}</span>
+          <span class="text-2xl text-muted-foreground/50">→</span>
+          <span class="text-5xl sm:text-6xl font-bold text-primary">{c.hero.result}</span>
+        </div>
+      </div>
+      <div class="sm:ml-auto">
+        <span class="inline-flex text-sm font-semibold rounded-full px-3 py-1 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">{c.hero.delta}</span>
+        <p class="text-xs text-muted-foreground mt-2">{c.heroNote}</p>
+      </div>
+    </div>
+
+    <!-- AUC bars (axis starts at 0.50 to make the gap visible) -->
+    <div class="mt-8 space-y-4">
+      <div>
+        <div class="flex justify-between text-xs text-muted-foreground mb-1"><span>{c.baselineName}</span><span class="font-mono">{c.hero.label} {c.hero.baseline}</span></div>
+        <div class="h-3 rounded-full bg-muted overflow-hidden"><div class="h-full rounded-full bg-muted-foreground/70" style={`width: ${c.results[0].barBaseline}%`}></div></div>
+      </div>
+      <div>
+        <div class="flex justify-between text-xs mb-1"><span class="font-medium text-foreground">{c.challengerName}</span><span class="font-mono text-muted-foreground">{c.hero.label} {c.hero.result}</span></div>
+        <div class="h-3 rounded-full bg-muted overflow-hidden"><div class="h-full rounded-full bg-primary" style={`width: ${c.results[0].barJev}%`}></div></div>
+      </div>
+      {c.barNote && <p class="text-[11px] text-muted-foreground/70">{c.barNote}</p>}
+    </div>
+  </section>
+
+  <!-- Quick stats -->
+  <section class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    {c.stats.map((s) => (
+      <div class="rounded-xl border border-border/70 bg-card p-4">
+        <div class="text-2xl font-bold mb-0.5">{s.value}</div>
+        <div class="text-xs font-medium text-foreground/80">{s.label}</div>
+        <div class="text-[11px] text-muted-foreground mt-0.5">{s.note}</div>
+      </div>
+    ))}
+  </section>
+
+  <!-- TL;DR -->
+  <section class="rounded-xl border border-primary/25 bg-primary/5 p-6 mb-10">
+    <h2 class="text-sm font-semibold uppercase tracking-wide text-primary mb-3">TL;DR</h2>
+    <ul class="space-y-2">
+      {c.tldr.map((t) => <li class="text-sm leading-relaxed flex gap-2"><span class="text-primary mt-0.5">▸</span><span>{t}</span></li>)}
+    </ul>
+  </section>
+
+  <div class="grid lg:grid-cols-[1fr_260px] gap-10">
+    <article class="space-y-10 min-w-0">
+      <!-- Context -->
+      <section>
+        <h2 class="text-xl font-bold mb-4">The task</h2>
+        <div class="space-y-3">
+          {c.context.map((p) => <p class="text-sm sm:text-[15px] text-muted-foreground leading-relaxed">{p}</p>)}
+        </div>
+      </section>
+
+      <!-- Setup -->
+      <section>
+        <h2 class="text-xl font-bold mb-4">How each model was used</h2>
+        <div class="grid sm:grid-cols-2 gap-4">
+          {c.setup.map((s) => (
+            <div class={`rounded-xl border p-5 ${s.badge === 'challenger' ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-border/70 bg-card'}`}>
+              <h3 class="font-semibold text-sm mb-3">{s.model}</h3>
+              <ul class="space-y-2">
+                {s.bullets.map((b) => <li class="text-sm text-muted-foreground leading-relaxed flex gap-2"><span class="text-foreground/40">·</span><span>{b}</span></li>)}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- Results -->
+      <section>
+        <h2 class="text-xl font-bold mb-4">Results</h2>
+        <div class="overflow-x-auto rounded-xl border border-border/70">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-border/70 bg-muted/40 text-left">
+                <th class="px-4 py-3 font-medium">Metric</th>
+                <th class="px-4 py-3 font-medium">{c.baselineName}</th>
+                <th class="px-4 py-3 font-medium text-primary">{c.challengerName}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {c.results.map((r) => (
+                <tr class="border-b border-border/50 last:border-0">
+                  <td class="px-4 py-3">{r.metric}</td>
+                  <td class="px-4 py-3 font-mono text-muted-foreground">{r.baseline}</td>
+                  <td class="px-4 py-3 font-mono text-primary font-semibold">{r.jev}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Analysis -->
+      <section>
+        <h2 class="text-xl font-bold mb-4">What moved the needle</h2>
+        <div class="space-y-3">
+          {c.analysis.map((a: any) => (
+            <div class="rounded-xl border border-border/70 bg-card p-5">
+              <h3 class="font-semibold text-sm mb-1.5">{a.head}</h3>
+              <p class="text-sm text-muted-foreground leading-relaxed">{a.body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- Limitations -->
+      <section>
+        <h2 class="text-xl font-bold mb-4">What didn't work & limits</h2>
+        <ul class="space-y-2.5 rounded-xl border border-border/70 bg-muted/30 p-5">
+          {c.limitations.map((l) => <li class="text-sm text-muted-foreground leading-relaxed flex gap-2"><span class="text-destructive mt-0.5">✕</span><span>{l}</span></li>)}
+        </ul>
+      </section>
+    </article>
+
+    <!-- Sidebar -->
+    <aside class="space-y-4 lg:sticky lg:top-20 self-start w-full">
+      <div class="rounded-xl border border-border/70 bg-card p-5">
+        <h2 class="font-semibold text-sm mb-3">Case facts</h2>
+        <dl class="space-y-2.5 text-sm">
+          <div class="flex justify-between gap-2"><dt class="text-muted-foreground">Task</dt><dd class="font-medium text-right">{c.task}</dd></div>
+          <div class="flex justify-between gap-2"><dt class="text-muted-foreground">Baseline</dt><dd class="font-medium text-right">{c.baselineName}</dd></div>
+          <div class="flex justify-between gap-2"><dt class="text-muted-foreground">Challenger</dt><dd class="font-medium text-right">{c.challengerName}</dd></div>
+          <div class="flex justify-between gap-2"><dt class="text-muted-foreground">Date</dt><dd class="font-medium text-right">{c.date}</dd></div>
+        </dl>
+        {c.origin === 'community' && c.source && (
+          <div class="mt-4 pt-4 border-t border-border/60">
+            <div class="text-xs font-medium text-muted-foreground mb-1">Source (quoted, not re-run)</div>
+            <a href={c.source.url} target="_blank" rel="noopener" class="text-sm text-primary hover:underline break-words">{c.source.label} ↗</a>
+            <div class="text-[11px] text-muted-foreground/70 mt-1">by {c.source.author} · original eval linked from the repo</div>
+          </div>
+        )}
+      </div>
+      <div class="rounded-xl border border-border/70 bg-card p-5">
+        <h2 class="font-semibold text-sm mb-2">More Jev</h2>
+        <nav class="flex flex-col gap-2 text-sm">
+          <a href="/jev-prompts/" class="text-primary hover:underline">All Jev prompts →</a>
+          {others.map((o) => <a href={`/jev-case-studies/${o.slug}/`} class="text-primary hover:underline">{o.title} →</a>)}
+          <a href="/jev-case-studies/" class="text-muted-foreground hover:text-foreground">All case studies →</a>
+        </nav>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Reproduce -->
+  <section class="mt-12 pt-8 border-t border-border/60">
+    <h2 class="text-xl font-bold mb-2">Reproduce it</h2>
+    <p class="text-sm text-muted-foreground mb-6 max-w-2xl">
+      {c.origin === 'community'
+        ? 'Templates for the same pattern — copy, point them at your own state, and keep the thresholds in code.'
+        : 'The exact templates this case used — copy, point them at your own state, and keep the thresholds in code.'}
+    </p>
+    <PromptList filter={(p) => (c.promptIds as string[]).includes(p.id)} />
+  </section>
+</Layout>

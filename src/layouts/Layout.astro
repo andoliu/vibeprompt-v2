@@ -8,9 +8,11 @@ import '../styles/globals.css';
 interface Props {
   title: string;
   description?: string;
+  type?: string;
 }
 
-const { title, description = 'Copy-ready AI coding prompts for Claude Code, Cursor, Lovable and Jev. Find a prompt, copy it, ship it.' } = Astro.props;
+const { title, description = 'Copy-ready AI coding prompts for Claude Code, Cursor, Lovable and Jev. Find a prompt, copy it, ship it.', type = 'website' } = Astro.props;
+const canonicalUrl = Astro.url.pathname === '/' ? 'https://vibeprompt.online/' : `https://vibeprompt.online${Astro.url.pathname}`;
 ---
 
 <!doctype html>
@@ -21,13 +23,14 @@ const { title, description = 'Copy-ready AI coding prompts for Claude Code, Curs
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
     <title>{title}</title>
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={type} />
     <meta property="og:site_name" content="VibePrompt" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content="https://vibeprompt.online/og-image.png" />
-    <meta property="og:url" content={Astro.url.pathname === '/' ? 'https://vibeprompt.online/' : `https://vibeprompt.online${Astro.url.pathname}`} />
+    <meta property="og:url" content={canonicalUrl} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />

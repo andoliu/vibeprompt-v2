@@ -28,5 +28,9 @@ const count = prompts.filter((p) => p.tool === 'jev').length;
     One honest caveat: "Jev never hallucinates" means it can only return values from your schema — it can still <em>choose</em> the wrong one.
     Calibrated confidence is your second signal: gate expensive or irreversible actions on it.
   </p>
+  <p class="text-muted-foreground leading-relaxed mb-4 max-w-3xl">
+    Want proof these patterns work outside the docs? <a href="/jev-case-studies/" class="text-primary font-medium hover:underline">Read the Jev case studies</a> —
+    evidence-backed projects with real metrics, negative results included.
+  </p>
   <PromptList filter={(p) => p.tool === 'jev'} />
 </Layout>
